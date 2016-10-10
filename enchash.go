@@ -5,6 +5,7 @@ package main
 import (
 	"crypto/md5"
 	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
@@ -22,6 +23,7 @@ func main() {
 	log.Printf("target = %s", os.Args[1])
 	GetMD5(os.Args[1])
 	GetSha1(os.Args[1])
+	GetSha256(os.Args[1])
 	GetURLEnc(os.Args[1])
 	GetBase64(os.Args[1])
 }
@@ -56,6 +58,22 @@ func GetSha1(str string) string {
 	sha1str := hex.EncodeToString(sha1.Sum(nil))
 	log.Printf("sha1 = %s\n", sha1str)
 	return sha1str
+}
+
+// GetSha256 : sha256 생성하기
+func GetSha256(str string) string {
+	// sha256 해시값 만들기
+	sha256 := sha256.New()
+	data := []byte(str)
+	// log.Printf("%s\n", data)
+	// 해시값을 만들 데이터 설정
+	sha256.Write(data)
+	// 해시값을 출력
+	// 추가 data 를 넣어주면 기존 데이터에 sum 하는 방식으로 해시값을 리턴
+	// data 1개인 경우 sum(nil) 사용
+	sha256str := hex.EncodeToString(sha256.Sum(nil))
+	log.Printf("sha256 = %s\n", sha256str)
+	return sha256str
 }
 
 // GetURLEnc : URL 인코딩 생성하기
