@@ -5,9 +5,11 @@ package main
 import (
 	"crypto/md5"
 	"crypto/sha1"
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 )
 
@@ -20,6 +22,8 @@ func main() {
 	log.Printf("target = %s", os.Args[1])
 	GetMD5(os.Args[1])
 	GetSha1(os.Args[1])
+	GetURLEnc(os.Args[1])
+	GetBase64(os.Args[1])
 }
 
 // GetMD5 : md5 생성하기
@@ -52,4 +56,19 @@ func GetSha1(str string) string {
 	sha1str := hex.EncodeToString(sha1.Sum(nil))
 	log.Printf("sha1 = %s\n", sha1str)
 	return sha1str
+}
+
+// GetURLEnc : URL 인코딩 생성하기
+func GetURLEnc(str string) string {
+	urlenc := url.QueryEscape(str)
+	log.Printf("urlenc = %s\n", urlenc)
+	return urlenc
+}
+
+// GetBase64 :  base64 생성하기
+func GetBase64(str string) string {
+	data := []byte(str)
+	base64 := base64.StdEncoding.EncodeToString(data)
+	log.Printf("base64 = %s\n", base64)
+	return base64
 }
