@@ -28,6 +28,7 @@ func main() {
 	GetSha1(os.Args[1])
 	GetSha256(os.Args[1])
 	GetEncURL(os.Args[1])
+	GetDecURL(os.Args[1])
 	GetEncBase64(os.Args[1])
 	GetDecBase64(os.Args[1])
 }
@@ -85,6 +86,13 @@ func GetEncURL(str string) string {
 	encurl := url.QueryEscape(str)
 	fmt.Printf("encode url = %s\n", encurl)
 	return encurl
+}
+
+// GetDecURL : URL 디코딩
+func GetDecURL(str string) string {
+	decurl, _ := url.QueryUnescape(str)
+	fmt.Printf("decode url = %s\n", decurl)
+	return decurl
 }
 
 // GetEncBase64 :  base64 인코딩
