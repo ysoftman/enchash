@@ -87,10 +87,16 @@ func GetSha256(str string) string {
 }
 
 // GetEncURL : URL 인코딩
-func GetEncURL(str string) string {
-	encurl := url.QueryEscape(str)
-	fmt.Printf("encode url = %s\n", encurl)
-	return encurl
+func GetEncURL(str string) (string, string) {
+	encurl1 := url.QueryEscape(str)
+	spaceSign := "+"
+	fmt.Printf("encode url(%v) = %s\n", spaceSign, encurl1)
+
+	t := &url.URL{Path: str}
+	encurl2 := t.String()
+	spaceSign = "%20"
+	fmt.Printf("encode url(%v) = %s\n", spaceSign, encurl2)
+	return encurl1, encurl2
 }
 
 // GetDecURL : URL 디코딩
