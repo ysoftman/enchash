@@ -6,6 +6,7 @@ import (
 	"crypto/md5"
 	"crypto/sha1"
 	"crypto/sha256"
+	"encoding/base32"
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
@@ -29,8 +30,12 @@ func main() {
 	GetSha256(os.Args[1])
 	GetEncURL(os.Args[1])
 	GetDecURL(os.Args[1])
+	GetEncBase32(os.Args[1])
+	GetDecBase32(os.Args[1])
 	GetEncBase64(os.Args[1])
 	GetDecBase64(os.Args[1])
+	GetEncHex(os.Args[1])
+	GetDecHex(os.Args[1])
 }
 
 // GetMD5 : md5 생성하기
@@ -90,9 +95,32 @@ func GetEncURL(str string) string {
 
 // GetDecURL : URL 디코딩
 func GetDecURL(str string) string {
-	decurl, _ := url.QueryUnescape(str)
+	decurl, err := url.QueryUnescape(str)
+	if err != nil {
+		fmt.Printf("decode url = %v\n", err.Error())
+		return ""
+	}
 	fmt.Printf("decode url = %s\n", decurl)
 	return decurl
+}
+
+// GetEncBase32 : base32 인코딩
+func GetEncBase32(str string) string {
+	data := []byte(str)
+	encbase32 := base32.StdEncoding.EncodeToString(data)
+	fmt.Printf("encode base32 = %s\n", encbase32)
+	return encbase32
+}
+
+// GetDecBase32 : base32 디코딩
+func GetDecBase32(str string) string {
+	decbase32, err := base32.StdEncoding.DecodeString(str)
+	if err != nil {
+		fmt.Printf("decode base32 = %v\n", err.Error())
+		return ""
+	}
+	fmt.Printf("decode base32 = %s\n", decbase32)
+	return string(decbase32)
 }
 
 // GetEncBase64 :  base64 인코딩
@@ -105,7 +133,31 @@ func GetEncBase64(str string) string {
 
 // GetDecBase64 :  base64 디코딩
 func GetDecBase64(str string) string {
-	decbase64, _ := base64.StdEncoding.DecodeString(str)
+	decbase64, err := base64.StdEncoding.DecodeString(str)
+	if err != nil {
+		fmt.Printf("decode base64 = %v\n", err.Error())
+		return ""
+	}
 	fmt.Printf("decode base64 = %s\n", decbase64)
 	return string(decbase64)
+}
+
+// GetEncHex : 스트링을 16진수로 인코딩
+func GetEncHex(str string) string {
+	data := []byte(str)
+	hexdecimal := hex.EncodeToString(data)
+	fmt.Printf("encode hexdecimal = %s\n", hexdecimal)
+	return hexdecimal
+}
+
+// GetDecHex : 16진수를 스트링으로 디코딩
+func GetDecHex(str string) string {
+	data, err := hex.DecodeString(str)
+	if err != nil {
+		fmt.Printf("decode hexdecimal = %v\n", err.Error())
+		return ""
+	}
+	decStr := string(data)
+	fmt.Printf("decode hexdecimal = %s\n", decStr)
+	return decStr
 }
