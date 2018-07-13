@@ -56,18 +56,26 @@ func GetMD5(str string) string {
 
 // GetSha1 : sha1 생성하기
 func GetSha1(str string) string {
-	// sha1 해시값 만들기
-	sha1 := sha1.New()
 	data := []byte(str)
-	// fmt.Printf("%s\n", data)
-	// 해시값을 만들 데이터 설정
-	sha1.Write(data)
-	// 해시값을 출력
-	// 추가 data 를 넣어주면 기존 데이터에 sum 하는 방식으로 해시값을 리턴
-	// data 1개인 경우 sum(nil) 사용
-	sha1str := hex.EncodeToString(sha1.Sum(nil))
-	fmt.Printf("sha1 = %s\n", sha1str)
-	return sha1str
+
+	// sha1 해시값 만들기
+	// // 방법1
+	// sha1new := sha1.New()
+	// // fmt.Printf("%s\n", data)
+	// // 해시값을 만들 데이터 설정
+	// sha1new.Write(data)
+	// // 해시값을 출력
+	// // 추가 data 를 넣어주면 기존 데이터에 sum 하는 방식으로 해시값을 리턴
+	// // data 1개인 경우 sum(nil) 사용
+	// sha1str := hex.EncodeToString(sha1new.Sum(nil))
+	// fmt.Printf("sha1 = %s\n", sha1str)
+
+	// 방법2
+	// new 생성없이 바로 사용하기
+	// EncodeToString대신 %x 로 출력해서 스트링으로 저장해도됨
+	sha1str2 := fmt.Sprintf("%x", sha1.Sum(data))
+	fmt.Printf("sha1 = %s\n", sha1str2)
+	return sha1str2
 }
 
 // GetSha256 : sha256 생성하기
