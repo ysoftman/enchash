@@ -147,6 +147,11 @@ func GetEncBase64(str string) string {
 
 // GetDecBase64 :  base64 디코딩
 func GetDecBase64(str string) string {
+	// 패딩이 없는 경우 4의 배수까지 = 로 패딩
+	remainder := len(str) % 4
+	for i := 0; i < remainder; i++ {
+		str += "="
+	}
 	decbase64, err := base64.StdEncoding.DecodeString(str)
 	if err != nil {
 		fmt.Printf("decode base64 = %v\n", err.Error())
