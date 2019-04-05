@@ -32,8 +32,10 @@ func main() {
 	GetDecURL(os.Args[1])
 	GetEncBase32(os.Args[1])
 	GetDecBase32(os.Args[1])
-	GetEncBase64(os.Args[1])
-	GetDecBase64(os.Args[1])
+	GetEncBase64Std(os.Args[1])
+	GetDecBase64Std(os.Args[1])
+	GetEncBase64URL(os.Args[1])
+	GetDecBase64URL(os.Args[1])
 	GetEncHex(os.Args[1])
 	GetDecHex(os.Args[1])
 }
@@ -137,28 +139,56 @@ func GetDecBase32(str string) string {
 	return string(decbase32)
 }
 
-// GetEncBase64 :  base64 인코딩
-func GetEncBase64(str string) string {
+// GetEncBase64Std : base64 인코딩
+func GetEncBase64Std(str string) string {
 	data := []byte(str)
-	encbase64 := base64.StdEncoding.EncodeToString(data)
-	fmt.Printf("encode base64 = %s\n", encbase64)
-	return encbase64
+	encbase64std := base64.StdEncoding.EncodeToString(data)
+	fmt.Printf("encode base64(std) = %s\n", encbase64std)
+	return encbase64std
 }
 
-// GetDecBase64 :  base64 디코딩
-func GetDecBase64(str string) string {
+// GetDecBase64Std : base64 디코딩
+func GetDecBase64Std(str string) string {
 	// 패딩이 없는 경우 4의 배수까지 = 로 패딩
 	remainder := len(str) % 4
 	for i := 0; i < remainder; i++ {
 		str += "="
 	}
-	decbase64, err := base64.StdEncoding.DecodeString(str)
+	decbase64std, err := base64.StdEncoding.DecodeString(str)
 	if err != nil {
-		fmt.Printf("decode base64 = %v\n", err.Error())
+		fmt.Printf("decode base64(std) = %v\n", err.Error())
 		return ""
 	}
-	fmt.Printf("decode base64 = %s\n", decbase64)
-	return string(decbase64)
+	fmt.Printf("decode base64(std) = %s\n", decbase64std)
+	return string(decbase64std)
+}
+
+// GetEncBase64URL : base64 URL 인코딩
+// base64 인코딩은 RFC 4648 에 정의 되어 있다.
+// StdEncoding 기본 base64 인코딩 방법이고
+// URLEncoding 기본 base64 의 + 과 / 문자가 URL과file name에서 문제가 되어
+// +, / 를 각각 -,_ 로 변경해 URL과file name에 사용할 수 있다.
+func GetEncBase64URL(str string) string {
+	data := []byte(str)
+	encbase64url := base64.URLEncoding.EncodeToString(data)
+	fmt.Printf("encode base64(url) = %s\n", encbase64url)
+	return encbase64url
+}
+
+// GetDecBase64URL : base64 URL 디코딩
+func GetDecBase64URL(str string) string {
+	// 패딩이 없는 경우 4의 배수까지 = 로 패딩
+	remainder := len(str) % 4
+	for i := 0; i < remainder; i++ {
+		str += "="
+	}
+	decbase64url, err := base64.URLEncoding.DecodeString(str)
+	if err != nil {
+		fmt.Printf("decode base64(url) = %v\n", err.Error())
+		return ""
+	}
+	fmt.Printf("decode base64(url) = %s\n", decbase64url)
+	return string(decbase64url)
 }
 
 // GetEncHex : 스트링을 16진수로 인코딩
