@@ -24,7 +24,7 @@ func main() {
 		showUsage(file)
 		return
 	}
-	fmt.Println("string =", os.Args[1])
+	fmt.Printf("%20s = %v\n", "string", os.Args[1])
 	GetMD5(os.Args[1])
 	GetSha1(os.Args[1])
 	GetSha256(os.Args[1])
@@ -51,7 +51,7 @@ func GetMD5(str string) string {
 	// fmt.Printf("md5 sum = %x\n", md5.Sum(nil))
 	// md5str := (string)(md5.Sum(nil))
 	md5str := hex.EncodeToString(md5.Sum(nil))
-	fmt.Printf("md5 = %s\n", md5str)
+	fmt.Printf("%20s = %s\n", "md5", md5str)
 
 	return md5str
 }
@@ -76,7 +76,7 @@ func GetSha1(str string) string {
 	// new 생성없이 바로 사용하기
 	// EncodeToString대신 %x 로 출력해서 스트링으로 저장해도됨
 	sha1str2 := fmt.Sprintf("%x", sha1.Sum(data))
-	fmt.Printf("sha1 = %s\n", sha1str2)
+	fmt.Printf("%20s = %s\n", "sha1", sha1str2)
 	return sha1str2
 }
 
@@ -92,20 +92,18 @@ func GetSha256(str string) string {
 	// 추가 data 를 넣어주면 기존 데이터에 sum 하는 방식으로 해시값을 리턴
 	// data 1개인 경우 sum(nil) 사용
 	sha256str := hex.EncodeToString(sha256.Sum(nil))
-	fmt.Printf("sha256 = %s\n", sha256str)
+	fmt.Printf("%20s = %s\n", "sha256", sha256str)
 	return sha256str
 }
 
 // GetEncURL : URL 인코딩
 func GetEncURL(str string) (string, string) {
 	encurl1 := url.QueryEscape(str)
-	spaceSign := "+"
-	fmt.Printf("encode url(%v) = %s\n", spaceSign, encurl1)
+	fmt.Printf("%20s = %s\n", "encode url(+)", encurl1)
 
 	t := &url.URL{Path: str}
 	encurl2 := t.String()
-	spaceSign = "%20"
-	fmt.Printf("encode url(%v) = %s\n", spaceSign, encurl2)
+	fmt.Printf("%20s = %s\n", "encode url(%20)", encurl2)
 	return encurl1, encurl2
 }
 
@@ -113,10 +111,10 @@ func GetEncURL(str string) (string, string) {
 func GetDecURL(str string) string {
 	decurl, err := url.QueryUnescape(str)
 	if err != nil {
-		fmt.Printf("decode url = %v\n", err.Error())
+		fmt.Printf("%20s = %v\n", "decode url", err.Error())
 		return ""
 	}
-	fmt.Printf("decode url = %s\n", decurl)
+	fmt.Printf("%20s = %s\n", "decode url", decurl)
 	return decurl
 }
 
@@ -124,7 +122,7 @@ func GetDecURL(str string) string {
 func GetEncBase32(str string) string {
 	data := []byte(str)
 	encbase32 := base32.StdEncoding.EncodeToString(data)
-	fmt.Printf("encode base32 = %s\n", encbase32)
+	fmt.Printf("%20s = %s\n", "encode base32", encbase32)
 	return encbase32
 }
 
@@ -132,10 +130,10 @@ func GetEncBase32(str string) string {
 func GetDecBase32(str string) string {
 	decbase32, err := base32.StdEncoding.DecodeString(str)
 	if err != nil {
-		fmt.Printf("decode base32 = %v\n", err.Error())
+		fmt.Printf("%20s = %v\n", "decode base32", err.Error())
 		return ""
 	}
-	fmt.Printf("decode base32 = %s\n", decbase32)
+	fmt.Printf("%20s = %s\n", "decode base32", decbase32)
 	return string(decbase32)
 }
 
@@ -143,7 +141,7 @@ func GetDecBase32(str string) string {
 func GetEncBase64Std(str string) string {
 	data := []byte(str)
 	encbase64std := base64.StdEncoding.EncodeToString(data)
-	fmt.Printf("encode base64(std) = %s\n", encbase64std)
+	fmt.Printf("%20s = %s\n", "encode base64(std)", encbase64std)
 	return encbase64std
 }
 
@@ -156,10 +154,10 @@ func GetDecBase64Std(str string) string {
 	}
 	decbase64std, err := base64.StdEncoding.DecodeString(str)
 	if err != nil {
-		fmt.Printf("decode base64(std) = %v\n", err.Error())
+		fmt.Printf("%20s = %v\n", "decode base64(std)", err.Error())
 		return ""
 	}
-	fmt.Printf("decode base64(std) = %s\n", decbase64std)
+	fmt.Printf("%20s = %s\n", "decode base64(std)", decbase64std)
 	return string(decbase64std)
 }
 
@@ -171,7 +169,7 @@ func GetDecBase64Std(str string) string {
 func GetEncBase64URL(str string) string {
 	data := []byte(str)
 	encbase64url := base64.URLEncoding.EncodeToString(data)
-	fmt.Printf("encode base64(url) = %s\n", encbase64url)
+	fmt.Printf("%20s = %s\n", "encode base64(url)", encbase64url)
 	return encbase64url
 }
 
@@ -184,10 +182,10 @@ func GetDecBase64URL(str string) string {
 	}
 	decbase64url, err := base64.URLEncoding.DecodeString(str)
 	if err != nil {
-		fmt.Printf("decode base64(url) = %v\n", err.Error())
+		fmt.Printf("%20s = %v\n", "decode base64(url)", err.Error())
 		return ""
 	}
-	fmt.Printf("decode base64(url) = %s\n", decbase64url)
+	fmt.Printf("%20s = %s\n", "decode base64(url)", decbase64url)
 	return string(decbase64url)
 }
 
@@ -195,7 +193,7 @@ func GetDecBase64URL(str string) string {
 func GetEncHex(str string) string {
 	data := []byte(str)
 	hexdecimal := hex.EncodeToString(data)
-	fmt.Printf("encode hexdecimal = %s\n", hexdecimal)
+	fmt.Printf("%20s = %s\n", "encode hexdecimal", hexdecimal)
 	return hexdecimal
 }
 
@@ -203,10 +201,10 @@ func GetEncHex(str string) string {
 func GetDecHex(str string) string {
 	data, err := hex.DecodeString(str)
 	if err != nil {
-		fmt.Printf("decode hexdecimal = %v\n", err.Error())
+		fmt.Printf("%20s = %v\n", "decode hexdecimal", err.Error())
 		return ""
 	}
 	decStr := string(data)
-	fmt.Printf("decode hexdecimal = %s\n", decStr)
+	fmt.Printf("%20s = %s\n", "decode hexdecimal", decStr)
 	return decStr
 }
