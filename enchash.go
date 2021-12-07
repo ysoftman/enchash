@@ -55,7 +55,7 @@ func main() {
 		showUsage(file)
 		return
 	}
-	fmt.Printf("%20s = %v\n", "string", os.Args[1])
+	fmt.Printf("%30v = %v\n", "string", os.Args[1])
 	GetMD5(os.Args[1])
 	GetSha1(os.Args[1])
 	GetSha256(os.Args[1])
@@ -83,7 +83,7 @@ func GetMD5(str string) string {
 	// md5str := (string)(md5.Sum(nil))
 	md5str := hex.EncodeToString(md5.Sum(nil))
 	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "md5", md5str)))
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "md5", md5str)))
 	return md5str
 }
 
@@ -92,24 +92,29 @@ func GetSha1(str string) string {
 	data := []byte(str)
 
 	// sha1 해시값 만들기
-	// // 방법1
-	// sha1new := sha1.New()
-	// // fmt.Printf("%s\n", data)
-	// // 해시값을 만들 데이터 설정
-	// sha1new.Write(data)
-	// // 해시값을 출력
-	// // 추가 data 를 넣어주면 기존 데이터에 sum 하는 방식으로 해시값을 리턴
-	// // data 1개인 경우 sum(nil) 사용
-	// sha1str := hex.EncodeToString(sha1new.Sum(nil))
-	// fmt.Printf("sha1 = %s\n", sha1str)
+	// 방법1
+	sha1new := sha1.New()
+	// fmt.Printf("%s\n", data)
+	// 해시값을 만들 데이터 설정
+	sha1new.Write(data)
+	// 해시값을 출력
+	// 추가 data 를 넣어주면 기존 데이터에 sum 하는 방식으로 해시값을 리턴
+	// data 1개인 경우 sum(nil) 사용
+	sha1str := hex.EncodeToString(sha1new.Sum(nil))
+	currentColorNum++
+	fmt.Printf("%30v = %s\n", "sha1", sha1str)
+	sha1str = base64.URLEncoding.EncodeToString(sha1new.Sum(nil))
+	currentColorNum++
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "sha1(base64.URLEncoding)", sha1str)))
 
 	// 방법2
 	// new 생성없이 바로 사용하기
 	// EncodeToString대신 %x 로 출력해서 스트링으로 저장해도됨
-	sha1str2 := fmt.Sprintf("%x", sha1.Sum(data))
-	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "sha1", sha1str2)))
-	return sha1str2
+	// sha1str2 := fmt.Sprintf("%x", sha1.Sum(data))
+	// currentColorNum++
+	// fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "sha1", sha1str2)))
+
+	return sha1str
 }
 
 // GetSha256 : sha256 생성하기
@@ -125,7 +130,11 @@ func GetSha256(str string) string {
 	// data 1개인 경우 sum(nil) 사용
 	sha256str := hex.EncodeToString(sha256.Sum(nil))
 	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "sha256", sha256str)))
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "sha256", sha256str)))
+	sha256str = base64.URLEncoding.EncodeToString(sha256.Sum(nil))
+	currentColorNum++
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "sha256(base64.URLEncoding)", sha256str)))
+
 	return sha256str
 }
 
@@ -133,12 +142,12 @@ func GetSha256(str string) string {
 func GetEncURL(str string) (string, string) {
 	encurl1 := url.QueryEscape(str)
 	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "encode url(+)", encurl1)))
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "encode url(+)", encurl1)))
 
 	t := &url.URL{Path: str}
 	encurl2 := t.String()
 	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "encode url(%20)", encurl2)))
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "encode url(%20)", encurl2)))
 	return encurl1, encurl2
 }
 
@@ -146,11 +155,11 @@ func GetEncURL(str string) (string, string) {
 func GetDecURL(str string) string {
 	decurl, err := url.QueryUnescape(str)
 	if err != nil {
-		fmt.Printf("%20s = %v\n", "decode url", err.Error())
+		fmt.Printf("%30v = %v\n", "decode url", err.Error())
 		return ""
 	}
 	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "decode url", decurl)))
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "decode url", decurl)))
 	return decurl
 }
 
@@ -159,7 +168,7 @@ func GetEncBase32(str string) string {
 	data := []byte(str)
 	encbase32 := base32.StdEncoding.EncodeToString(data)
 	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "encode base32", encbase32)))
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "encode base32", encbase32)))
 	return encbase32
 }
 
@@ -167,11 +176,11 @@ func GetEncBase32(str string) string {
 func GetDecBase32(str string) string {
 	decbase32, err := base32.StdEncoding.DecodeString(str)
 	if err != nil {
-		fmt.Printf("%20s = %v\n", "decode base32", err.Error())
+		fmt.Printf("%30v = %v\n", "decode base32", err.Error())
 		return ""
 	}
 	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "decode base32", decbase32)))
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "decode base32", decbase32)))
 	return string(decbase32)
 }
 
@@ -180,7 +189,7 @@ func GetEncBase64Std(str string) string {
 	data := []byte(str)
 	encbase64std := base64.StdEncoding.EncodeToString(data)
 	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "encode base64(std)", encbase64std)))
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "encode base64(std)", encbase64std)))
 	return encbase64std
 }
 
@@ -193,11 +202,11 @@ func GetDecBase64Std(str string) string {
 	}
 	decbase64std, err := base64.StdEncoding.DecodeString(str)
 	if err != nil {
-		fmt.Printf("%20s = %v\n", "decode base64(std)", err.Error())
+		fmt.Printf("%30v = %v\n", "decode base64(std)", err.Error())
 		return ""
 	}
 	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "decode base64(std)", decbase64std)))
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "decode base64(std)", decbase64std)))
 	return string(decbase64std)
 }
 
@@ -210,7 +219,7 @@ func GetEncBase64URL(str string) string {
 	data := []byte(str)
 	encbase64url := base64.URLEncoding.EncodeToString(data)
 	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "encode base64(url)", encbase64url)))
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "encode base64(url)", encbase64url)))
 	return encbase64url
 }
 
@@ -223,11 +232,11 @@ func GetDecBase64URL(str string) string {
 	}
 	decbase64url, err := base64.URLEncoding.DecodeString(str)
 	if err != nil {
-		fmt.Printf("%20s = %v\n", "decode base64(url)", err.Error())
+		fmt.Printf("%30v = %v\n", "decode base64(url)", err.Error())
 		return ""
 	}
 	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "decode base64(url)", decbase64url)))
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "decode base64(url)", decbase64url)))
 	return string(decbase64url)
 }
 
@@ -236,7 +245,7 @@ func GetEncHex(str string) string {
 	data := []byte(str)
 	hexdecimal := hex.EncodeToString(data)
 	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "encode hexdecimal", hexdecimal)))
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "encode hexdecimal", hexdecimal)))
 	return hexdecimal
 }
 
@@ -244,11 +253,11 @@ func GetEncHex(str string) string {
 func GetDecHex(str string) string {
 	data, err := hex.DecodeString(str)
 	if err != nil {
-		fmt.Printf("%20s = %v\n", "decode hexdecimal", err.Error())
+		fmt.Printf("%30v = %v\n", "decode hexdecimal", err.Error())
 		return ""
 	}
 	decStr := string(data)
 	currentColorNum++
-	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%20s = %s\n", "decode hexdecimal", decStr)))
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "decode hexdecimal", decStr)))
 	return decStr
 }
