@@ -9,50 +9,63 @@ import (
 	"encoding/base32"
 	"encoding/base64"
 	"encoding/hex"
+	"flag"
 	"fmt"
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/fatih/color"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var currentColorNum int = 0
+var yellow = color.New(color.FgYellow).SprintFunc()
+var green = color.New(color.FgGreen).SprintFunc()
+var red = color.New(color.FgRed).SprintFunc()
+var blue = color.New(color.FgBlue).SprintFunc()
+var magenta = color.New(color.FgMagenta).SprintFunc()
+var cyan = color.New(color.FgCyan).SprintFunc()
+var white = color.New(color.FgWhite).SprintFunc()
 
 func GetNextColorString(i int, str string) string {
 	n := i % 6
 	switch n {
 	case 0:
-		yellow := color.New(color.FgYellow).SprintFunc()
 		return yellow(str)
 	case 1:
-		green := color.New(color.FgGreen).SprintFunc()
 		return green(str)
 	case 2:
-		red := color.New(color.FgRed).SprintFunc()
 		return red(str)
 	case 3:
-		blue := color.New(color.FgBlue).SprintFunc()
 		return blue(str)
 	case 4:
-		magenta := color.New(color.FgMagenta).SprintFunc()
 		return magenta(str)
 	case 5:
-		cyan := color.New(color.FgCyan).SprintFunc()
 		return cyan(str)
 	default:
-		white := color.New(color.FgWhite).SprintFunc()
 		return white(str)
 	}
 }
 
-func showUsage(file string) {
-	fmt.Println("[usage] " + file + " string")
-}
 func main() {
-	_, file := filepath.Split(os.Args[0])
+	mbc := flag.String("match-bcrypted", "", "bcrypted_string=plain_string")
+	flag.Parse()
+	if len(*mbc) != 0 {
+		v := strings.Split(*mbc, "=")
+		if len(v) != 2 {
+			fmt.Println(red("wrong values"))
+			flag.Usage()
+			return
+		}
+		MatchBcrypt(v[0], v[1])
+		return
+	}
 	if len(os.Args) <= 1 {
-		showUsage(file)
+		_, file := filepath.Split(os.Args[0])
+		fmt.Println("ex) " + file + " ysoftman")
+		fmt.Println("ex) " + file + " -match-bcrypted 'xxx=ysoftman'")
 		return
 	}
 	fmt.Printf("%30v = %v\n", "string", os.Args[1])
@@ -69,6 +82,7 @@ func main() {
 	GetDecBase64URL(os.Args[1])
 	GetEncHex(os.Args[1])
 	GetDecHex(os.Args[1])
+	GetBcrypt(os.Args[1])
 }
 
 // GetMD5 : md5 생성하기
@@ -260,4 +274,33 @@ func GetDecHex(str string) string {
 	currentColorNum++
 	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "decode hexdecimal", decStr)))
 	return decStr
+}
+
+// GetBcrypt : bcrypt hashing
+func GetBcrypt(str string) string {
+	// randome salt 로 매번 해싱 결과가 달라진다.
+	data := []byte(str)
+	// cost 는 연산량으로 클수로 해싱 시간이 오래걸린다
+	bcrypted, err := bcrypt.GenerateFromPassword(data, bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Printf("%30v = %v\n", "encode bcrypt", err.Error())
+		return ""
+	}
+	bcStr := string(bcrypted)
+	fmt.Print(GetNextColorString(currentColorNum, fmt.Sprintf("%30v = %s\n", "decode bcrypt", bcStr)))
+	return bcStr
+}
+
+// MatchBcrypt : match bcrypt hashing
+func MatchBcrypt(str1, str2 string) error {
+	fmt.Println(str1)
+	fmt.Println(str2)
+	data1 := []byte(str1)
+	data2 := []byte(str2)
+	if err := bcrypt.CompareHashAndPassword(data1, data2); err != nil {
+		fmt.Print(red(fmt.Sprintf("[not matched] %v != %v\n", str1, str2)))
+		return err
+	}
+	fmt.Print(green(fmt.Sprintf("[matched] %v == %v\n", str1, str2)))
+	return nil
 }
