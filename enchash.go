@@ -76,6 +76,7 @@ func main() {
 			fmt.Println("ex) " + file + " ysoftman")
 			return
 		}
+		inputstr = os.Args[1]
 	}
 
 	fmt.Printf("%30v = %v\n", "string", inputstr)
