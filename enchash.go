@@ -11,6 +11,9 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
+	"io"
+	"io/fs"
+	"log"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -20,14 +23,16 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var currentColorNum int = 0
-var yellow = color.New(color.FgYellow).SprintFunc()
-var green = color.New(color.FgGreen).SprintFunc()
-var red = color.New(color.FgRed).SprintFunc()
-var blue = color.New(color.FgBlue).SprintFunc()
-var magenta = color.New(color.FgMagenta).SprintFunc()
-var cyan = color.New(color.FgCyan).SprintFunc()
-var white = color.New(color.FgWhite).SprintFunc()
+var (
+	currentColorNum int = 0
+	yellow              = color.New(color.FgYellow).SprintFunc()
+	green               = color.New(color.FgGreen).SprintFunc()
+	red                 = color.New(color.FgRed).SprintFunc()
+	blue                = color.New(color.FgBlue).SprintFunc()
+	magenta             = color.New(color.FgMagenta).SprintFunc()
+	cyan                = color.New(color.FgCyan).SprintFunc()
+	white               = color.New(color.FgWhite).SprintFunc()
+)
 
 func GetNextColorString(str string) string {
 	currentColorNum++
@@ -50,39 +55,63 @@ func GetNextColorString(str string) string {
 }
 
 func main() {
-	mbc := flag.String("match-bcrypted", "", "bcrypted_string=plain_string")
-	flag.Parse()
-	if len(*mbc) != 0 {
-		v := strings.Split(*mbc, "=")
-		if len(v) != 2 {
-			fmt.Println(red("wrong values"))
-			flag.Usage()
+	inputstr := readline()
+	if inputstr == "" {
+		mbc := flag.String("match-bcrypted", "", "bcrypted_string=plain_string")
+		flag.Parse()
+		if len(*mbc) != 0 {
+			v := strings.Split(*mbc, "=")
+			if len(v) != 2 {
+				fmt.Println(red("wrong values"))
+				flag.Usage()
+				return
+			}
+			if err := MatchBcrypt(v[0], v[1]); err != nil {
+				return
+			}
 			return
 		}
-		MatchBcrypt(v[0], v[1])
-		return
+		if len(os.Args) <= 1 {
+			_, file := filepath.Split(os.Args[0])
+			fmt.Println("ex) " + file + " ysoftman")
+			return
+		}
 	}
-	if len(os.Args) <= 1 {
-		_, file := filepath.Split(os.Args[0])
-		fmt.Println("ex) " + file + " ysoftman")
-		fmt.Println("ex) " + file + " -match-bcrypted 'xxx=ysoftman'")
-		return
+
+	fmt.Printf("%30v = %v\n", "string", inputstr)
+	GetMD5(inputstr)
+	GetSha1(inputstr)
+	GetSha256(inputstr)
+	GetEncURL(inputstr)
+	GetDecURL(inputstr)
+	GetEncBase32(inputstr)
+	GetDecBase32(inputstr)
+	GetEncBase64Std(inputstr)
+	GetDecBase64Std(inputstr)
+	GetEncBase64URL(inputstr)
+	GetDecBase64URL(inputstr)
+	GetEncHex(inputstr)
+	GetDecHex(inputstr)
+	GetBcrypt(inputstr)
+}
+
+func readline() string {
+	stat, err := os.Stdin.Stat()
+	if err != nil {
+		log.Fatal("failed to get stdin status")
+		return ""
 	}
-	fmt.Printf("%30v = %v\n", "string", os.Args[1])
-	GetMD5(os.Args[1])
-	GetSha1(os.Args[1])
-	GetSha256(os.Args[1])
-	GetEncURL(os.Args[1])
-	GetDecURL(os.Args[1])
-	GetEncBase32(os.Args[1])
-	GetDecBase32(os.Args[1])
-	GetEncBase64Std(os.Args[1])
-	GetDecBase64Std(os.Args[1])
-	GetEncBase64URL(os.Args[1])
-	GetDecBase64URL(os.Args[1])
-	GetEncHex(os.Args[1])
-	GetDecHex(os.Args[1])
-	GetBcrypt(os.Args[1])
+	// 키보드 입력시: os.Stdin -> 터미널 화면(문자 디바이스)에 연결-> ModeCharDevice 비트가 켜짐
+	// pipeline/redirection: os.Stdin -> | or < 에 연결 -> ModeCharDevice 비트가 꺼짐
+	if stat.Mode()&fs.ModeCharDevice != 0 {
+		return ""
+	}
+	buff, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		log.Fatal("failed to read stdin")
+		return ""
+	}
+	return strings.TrimRight(string(buff), "\n")
 }
 
 // GetMD5 : md5 생성하기
